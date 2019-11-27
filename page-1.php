@@ -3,7 +3,6 @@
 
 include "functions/pageBase.php";
 
-
 $page = "<!DOCTYPE html>
 <html>
 <head>

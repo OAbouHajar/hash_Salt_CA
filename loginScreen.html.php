@@ -9,6 +9,7 @@ include 'db.inc.php';
 session_start();
 require "Sanatize.php";
 include "functions/hashAndSalt.php";
+#include "functions/chckBlock.php";
 
 
 
@@ -16,12 +17,13 @@ $_SESSION['last_time'] = time();
 
 #### for the session id and the cookies set  ###########
 $_SESSION['ip'] = $_SERVER['REMOTE_ADDR'];
-$_SESSION['token'] = sha1(time() . rand() . $_SERVER['SERVER_NAME']);
-setcookie('token', $_SESSION['token']);
 $_SESSION['USER_AGENT'] = $_SERVER['HTTP_USER_AGENT'];
-echo $_SESSION['ip'];
-echo "<br>";
-echo $_SESSION['USER_AGENT'];
+$_SESSION['token'] = sha1($_SESSION['USER_AGENT'] . rand() . $_SERVER['SERVER_NAME']);
+setcookie('token', $_SESSION['token']);
+
+// // $_SESSION['lockedOut'] = false ;
+
+
 ### end session id and the cookies
 
 ############## to records the attempts when not loged in yet ###########
@@ -35,7 +37,11 @@ if (!(isset($_POST["userName"]) && isset($_POST["password"]))) {
 	}
 }
 ### End
-
+if  ($_SESSION['lockedOut']) {
+	echo "time out ";
+	echo $_SESSION['lockedOutTime'];
+	header("location: cantReach.php");
+}
 
 ##### NOT SUER WHY HERE ########
 $salt = uniqid(mt_rand());
@@ -49,7 +55,7 @@ if (isset($_POST["userName"]) && isset($_POST["password"])) /* If the username a
 	$username = $username->sanatize();
 	$password = new Sanatize($_POST["password"]);
 	$password = $password->sanatize();
-
+	$_SESSION['password'] = $_POST["password"];
 	$attempts = $_SESSION['attempts'];
 	$_SESSION["username"] = $_POST["userName"];
 	#to hash and de hash
@@ -99,7 +105,10 @@ if (isset($_POST["userName"]) && isset($_POST["password"])) /* If the username a
 				buildPage($attempts);
 				echo "<script>document.getElementById('errorMessage').innerHTML = '<div>The username $username and password could not be authenticated at the moment</div>'</script>";
 			} else {
-				echo "<script>document.getElementById('errorMessage').innerHTML = '<div class = 'attemptsUsed'>Sorry - You have used all 5 attempts</div>'</script>";
+				echo "YOU HAVE 5 ATTEPTS ALREADY ";
+				$_SESSION['lockedOut'] = true;
+				$_SESSION['lockedOutTime'] = time();
+				header("location: cantReach.php");
 			}
 		} else /* If rows have changed */ {
 			$_SESSION['user'] = $_POST['userName'];

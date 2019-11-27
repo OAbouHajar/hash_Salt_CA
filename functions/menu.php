@@ -38,7 +38,7 @@
 
 if (isset($_SESSION['user'])) {
 	//$userName = $_SESSION['user'];
-	echo "<div class='userMenuHead' >Hello :   " . $_SESSION['user'] . "</div>";
+	echo "<div class='userMenuHead' >YOU ARE LOGED IN AS :   " . $_SESSION['user'] . "</div>";
 }
 
 ?>
@@ -48,7 +48,6 @@ if (isset($_SESSION['user'])) {
 
 		<li><a class="active" href="page-1.php">Page-1</a></li>
 		<li><a href="page-2.php">page-2</a></li>
-		<li><a href="#contact">Admin</a></li>
 		<li><a href="changePass.php">Change Password</a></li>
 		<li><a href="logout.php">Logout</a></li>
 	</ul>

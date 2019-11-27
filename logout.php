@@ -5,34 +5,39 @@ include 'db.inc.php';
 ?>
 <!DOCTYPE html>
 <html>
+
 <body>
 
-<?php
-
-
-############ for the cookies and the session work #####
-$timestamp = date('Y-m-d H:i:s');
-$sqlStart = "INSERT INTO `logs` (`userName`, `ipAdderss`, `sessionToken`, `attepmts`, `loginStatus`,`describeLog`, `time`) 
+    <?php
+    if ($_SESSION['lockedOut']) {
+        echo "time out ";
+        echo $_SESSION['lockedOutTime'];
+        header("location: cantReach.php");
+    } else {
+        ############ for the cookies and the session work #####
+        $timestamp = date('Y-m-d H:i:s');
+        $sqlStart = "INSERT INTO `logs` (`userName`, `ipAdderss`, `sessionToken`, `attepmts`, `loginStatus`,`describeLog`, `time`) 
                     VALUES     ('$_SESSION[userName]', '$_SESSION[ip]', '$_SESSION[token]', '-/1', '0', 'LogOut' ,  '$timestamp')";
 
-echo $sqlStart;
+        echo $sqlStart;
 
-if (!mysqli_query($con, $sqlStart)) {
-    echo "Error in selecting username & password (loginScreen.html.php)" . mysqli_error($con);
-}
-####### end for the cookies and the session work
-// remove all session variables
-session_unset(); 
+        if (!mysqli_query($con, $sqlStart)) {
+            echo "Error in selecting username & password (loginScreen.html.php)" . mysqli_error($con);
+        }
+        ####### end for the cookies and the session work
+        // remove all session variables
+        session_unset();
 
-// destroy the session 
-session_destroy();
+        // destroy the session 
+        session_destroy();
 
-echo "All session variables are now removed, and the session is destroyed." ;
+        echo "All session variables are now removed, and the session is destroyed.";
+        setcookie('token', "", time() - 3600); 
 
-header("Location: loginScreen.html.php");
-
-
-?>
+        header("Location: loginScreen.html.php");
+    }
+    ?>
 
 </body>
+
 </html>
