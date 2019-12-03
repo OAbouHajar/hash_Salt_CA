@@ -49,7 +49,7 @@ if (isset($_SESSION['user'])) {
 
 		<li><a class="active" href="page-1.php">Page-1</a></li>
 		<li><a href="page-2.php">page-2</a></li>
-		<li><a href="#contact">Show Logs</a></li>
+		<li><a href="logs.php">Show Logs</a></li>
 		<li><a href="changePass.php">Change Password</a></li>
 		<li><a href="logout.php">Logout</a></li>
 	</ul>

@@ -2,7 +2,7 @@
 session_start();
 
 $page = $_SERVER['PHP_SELF'];
-$sec = "60";
+$sec = "1";
 ?>
 <html>
 

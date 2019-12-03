@@ -30,14 +30,16 @@ setcookie('token', $_SESSION['token']);
 #time when start record the attaepts
 if (!(isset($_POST["userName"]) && isset($_POST["password"]))) {
 	$timestamp = date('Y-m-d H:i:s');
-	$sqlStartBeforeSetName = "INSERT INTO `logs` (`userName`, `ipAdderss`, `sessionToken`, `attepmts`, `loginStatus`,`describeLog`, `time`) 
-						VALUES                    ('noSetYet', '$_SESSION[ip]', '$_SESSION[token]', '1', '0','TRYING', '$timestamp')";
-	if (!mysqli_query($con, $sqlStartBeforeSetName)) {
-		echo "Error in selecting username & password (loginScreen.html.php)" . mysqli_error($con);
-	}
 }
 ### End
-if  ($_SESSION['lockedOut']) {
+
+$first_time_load = true;
+if ($first_time_load) {
+	$_SESSION['lockedOut'] = false;
+	$first_time_load = false;
+}
+
+if ($_SESSION['lockedOut']) {
 	echo "time out ";
 	echo $_SESSION['lockedOutTime'];
 	header("location: cantReach.php");
@@ -69,12 +71,6 @@ if (isset($_POST["userName"]) && isset($_POST["password"])) /* If the username a
 	############ for the cookies and the session work #####
 	$_SESSION['userName'] = $_POST["userName"];
 	$timestamp = date('Y-m-d H:i:s');
-	$sqlStart = "INSERT INTO `logs` (`userName`, `ipAdderss`, `sessionToken`, `attepmts`, `loginStatus`,`describeLog`, `time`) 
-			VALUES                    ('$_SESSION[userName]', '$_SESSION[ip]', '$_SESSION[token]', $attempts, '1','LOGIN', '$timestamp')";
-
-	if (!mysqli_query($con, $sqlStart)) {
-		echo "Error in selecting username & password (loginScreen.html.php)" . mysqli_error($con);
-	}
 	####### end for the cookies and the session work
 
 
@@ -98,6 +94,12 @@ if (isset($_POST["userName"]) && isset($_POST["password"])) /* If the username a
 				$x =  mysqli_fetch_array($querySalt);
 				$hashed_pass = md5($_POST['password']);
 				$hashSalted = $hashed_pass . $x[0];
+				$sqlStart = "INSERT INTO `logs` (`userName`, `ipAdderss`, `sessionToken`, `attepmts`, `loginStatus`,`describeLog`, `time`) 
+				VALUES                    ('$_SESSION[userName]', '$_SESSION[ip]', '$_SESSION[token]', $attempts, '0','Not Successful Login', '$timestamp')";
+
+				if (!mysqli_query($con, $sqlStart)) {
+					echo "Error in selecting username & password (loginScreen.html.php)" . mysqli_error($con);
+				}
 
 
 
@@ -111,9 +113,15 @@ if (isset($_POST["userName"]) && isset($_POST["password"])) /* If the username a
 				header("location: cantReach.php");
 			}
 		} else /* If rows have changed */ {
-			$_SESSION['user'] = $_POST['userName'];
+			$_SESSION['user'] = strtoupper( $_POST['userName'] );
 			echo "attemp :: ", $attempts;
 			$_SESSION['logged_in'] = true;
+			$sqlStart = "INSERT INTO `logs` (`userName`, `ipAdderss`, `sessionToken`, `attepmts`, `loginStatus`,`describeLog`, `time`) 
+			VALUES                    ('$_SESSION[userName]', '$_SESSION[ip]', '$_SESSION[token]', $attempts, '1','Successful Login', '$timestamp')";
+
+			if (!mysqli_query($con, $sqlStart)) {
+				echo "Error in selecting username & password (loginScreen.html.php)" . mysqli_error($con);
+			}
 
 			/* Had to use the below code as I couldnt get script to work to replace the login screen
 			I tried document.getElementById() but as the login part was in a form it wouldn't work*/

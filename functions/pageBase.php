@@ -5,7 +5,12 @@
 	<meta charset="UTF-8">
 	<title>Welcome to Time Session Login</title>
 	<link rel="stylesheet" href="webStyle.css" type="text/css">
+
+
+
+
 </head>
+
 
 <body>
 	<?php
@@ -19,8 +24,11 @@
 
 	if ((time() - $_SESSION['max_session_live']) < 6000) {
 		echo "Time Left for this session :::";
-		echo 6000 - (time() - $_SESSION['max_session_live']);
+		$timeLeft = 6000 - (time() - $_SESSION['max_session_live']);
+		$timemaxSession = $_SESSION['max_session_live'];
+		echo $timeLeft;
 		echo " Seconds";
+
 		if ($_SESSION['user'] == 'ADMIN' && $_SESSION['password'] == 'SAD_2019!') {
 			include 'functions/menuAdmin.php';
 		} else {
@@ -28,7 +36,7 @@
 		}
 
 		if (isset($_SESSION['user'])) {
-			if ((time() - $_SESSION['last_time']) > 30) // Time in Seconds
+			if ((time() - $_SESSION['last_time']) > 300) // Time in Seconds
 			{
 				echo "<script>alert('15 Minutes over!');</script>";
 				header("location:logout.php");
@@ -53,5 +61,6 @@
 
 	?>
 </body>
+
 
 </html>
