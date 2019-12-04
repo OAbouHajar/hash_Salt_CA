@@ -1,9 +1,3 @@
-<!--
-	Name: loginScreen.html.php
-	Purpose: HTML / PHP File to allow a User to login and change their password if desired
-	Author: Brendan Browne
-	Date: 03/2018
--->
 <?php
 include 'db.inc.php';
 session_start();
@@ -29,21 +23,35 @@ setcookie('token', $_SESSION['token']);
 ############## to records the attempts when not loged in yet ###########
 #time when start record the attaepts
 if (!(isset($_POST["userName"]) && isset($_POST["password"]))) {
-	$timestamp = date('Y-m-d H:i:s');
+	// $timestamp = date('Y-m-d H:i:s');
+	$timestamp = time();
 }
 ### End
-
-$first_time_load = true;
-if ($first_time_load) {
-	$_SESSION['lockedOut'] = false;
-	$first_time_load = false;
+################## redirect new
+$sql_ip_blocked_select = " SELECT MAX(time) FROM `logs` WHERE ipAdderss = '$_SESSION[ip]' and describeLog = 'blocked' AND userAgent = '$_SESSION[USER_AGENT]' ";
+$query_time = mysqli_query($con, $sql_ip_blocked_select);
+$time_bocked =  mysqli_fetch_array($query_time);
+$time_blocked_check = strtotime($time_bocked[0]);
+if ($query_time->num_rows > 0) {
+	if (time()- $time_blocked_check < 60 ) {
+		header("location: cantReach.php");
+	}	
 }
+############################
 
-if ($_SESSION['lockedOut']) {
-	echo "time out ";
-	echo $_SESSION['lockedOutTime'];
-	header("location: cantReach.php");
-}
+
+############################
+// $first_time_load = true;
+// if ($first_time_load) {
+// 	$_SESSION['lockedOut'] = false;
+// 	$first_time_load = false;
+// }
+
+// if ($_SESSION['lockedOut']) {
+// 	echo "time out ";
+// 	echo $_SESSION['lockedOutTime'];
+// 	header("location: cantReach.php");
+// }
 
 ##### NOT SUER WHY HERE ########
 $salt = uniqid(mt_rand());
@@ -81,9 +89,9 @@ if (isset($_POST["userName"]) && isset($_POST["password"])) /* If the username a
 	echo "<br>";
 
 	/* Error checking for the sql statement */
-	if (!mysqli_query($con, $sql))
-		echo "Error in selecting username & password (loginScreen.html.php)" . mysqli_error($con);
-	else {
+	if (!mysqli_query($con, $sql)){
+		echo "Error in selecting username & password";
+	}else {
 		if (mysqli_affected_rows($con) == 0) /* If no rows have changed */ {
 			$attempts++;
 
@@ -94,11 +102,11 @@ if (isset($_POST["userName"]) && isset($_POST["password"])) /* If the username a
 				$x =  mysqli_fetch_array($querySalt);
 				$hashed_pass = md5($_POST['password']);
 				$hashSalted = $hashed_pass . $x[0];
-				$sqlStart = "INSERT INTO `logs` (`userName`, `ipAdderss`, `sessionToken`, `attepmts`, `loginStatus`,`describeLog`, `time`) 
-				VALUES                    ('$_SESSION[userName]', '$_SESSION[ip]', '$_SESSION[token]', $attempts, '0','Not Successful Login', '$timestamp')";
+				$sqlStart = "INSERT INTO `logs` (`userName`, `ipAdderss`, `sessionToken`, `attepmts`, `loginStatus`,`describeLog`, `time`, `userAgent`) 
+				VALUES 							('$_SESSION[userName]', '$_SESSION[ip]', '$_SESSION[token]', $attempts, '0','Not Successful Login', '$timestamp' , '$_SESSION[USER_AGENT]')";
 
 				if (!mysqli_query($con, $sqlStart)) {
-					echo "Error in selecting username & password (loginScreen.html.php)" . mysqli_error($con);
+					echo  mysqli_error($con);
 				}
 
 
@@ -107,17 +115,22 @@ if (isset($_POST["userName"]) && isset($_POST["password"])) /* If the username a
 				buildPage($attempts);
 				echo "<script>document.getElementById('errorMessage').innerHTML = '<div>The username $username and password could not be authenticated at the moment</div>'</script>";
 			} else {
+				$sql_ip_blocked_insert = "INSERT INTO `logs` (`userName`, `ipAdderss`, `sessionToken`, `attepmts`, `loginStatus`,`describeLog`, `time`, `userAgent`) 
+				VALUES                    ('$_SESSION[userName]', '$_SESSION[ip]', '$_SESSION[token]', '$_SESSION[attempts]', '0','blocked', '$timestamp','$_SESSION[USER_AGENT]')";
+				if (!mysqli_query($con, $sql_ip_blocked_insert)) {
+					echo "Error in selecting username & password (loginScreen.html.php)" . mysqli_error($con);
+				}
 				echo "YOU HAVE 5 ATTEPTS ALREADY ";
 				$_SESSION['lockedOut'] = true;
 				$_SESSION['lockedOutTime'] = time();
 				header("location: cantReach.php");
 			}
 		} else /* If rows have changed */ {
-			$_SESSION['user'] = strtoupper( $_POST['userName'] );
+			$_SESSION['user'] = strtoupper($_POST['userName']);
 			echo "attemp :: ", $attempts;
 			$_SESSION['logged_in'] = true;
-			$sqlStart = "INSERT INTO `logs` (`userName`, `ipAdderss`, `sessionToken`, `attepmts`, `loginStatus`,`describeLog`, `time`) 
-			VALUES                    ('$_SESSION[userName]', '$_SESSION[ip]', '$_SESSION[token]', $attempts, '1','Successful Login', '$timestamp')";
+			$sqlStart = "INSERT INTO `logs` (`userName`, `ipAdderss`, `sessionToken`, `attepmts`, `loginStatus`,`describeLog`, `time`,`userAgent`) 
+			VALUES                    ('$_SESSION[userName]', '$_SESSION[ip]', '$_SESSION[token]', $attempts, '1','Successful Login', '$timestamp','$_SESSION[USER_AGENT]')";
 
 			if (!mysqli_query($con, $sqlStart)) {
 				echo "Error in selecting username & password (loginScreen.html.php)" . mysqli_error($con);
@@ -185,4 +198,3 @@ function buildPage($att)
 
 /* Close the database connection */
 mysqli_close($con);
-?>

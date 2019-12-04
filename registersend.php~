@@ -1,0 +1,44 @@
+<?php
+include 'db.inc.php';
+require "Sanatize.php";
+include "functions/hashAndSalt.php";
+
+
+
+
+date_default_timezone_set("UTC");
+
+#$username = $_POST['username'] ; 	
+#$password = $_POST['psw'] ; 	
+
+$username = new Sanatize($_POST["username"]);
+$username = $username->sanatize();
+
+$password = new Sanatize($_POST["psw"]);
+$password = $password->sanatize();
+
+
+$sql_check_user_name = "SELECT * FROM `users` where userName = '$username'";
+if (!mysqli_query($con, $sql_check_user_name)) {
+  echo "Error in selecting username & password" . mysqli_error($con);
+} else {
+  if (mysqli_affected_rows($con) == 0) {
+    $salt = uniqid(mt_rand());
+    $hashed_salted_pass = hashAndSalt($password, $salt);
+    $sql = "INSERT INTO `users` ( `userName`, `password`, `salt`) VALUES ('$username', '$hashed_salted_pass', '$salt')";
+    echo $sql;
+    if (!mysqli_query($con, $sql)) {
+      echo "Error in selecting username & password" . mysqli_error($con);
+    }
+  } else { 
+    echo "USER NAME ALREADY SELECTED !!! (register.html.php)" ;
+  }
+}
+
+
+
+
+
+mysqli_close($con);
+
+header("Location: loginScreen.html.php");

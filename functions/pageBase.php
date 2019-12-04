@@ -16,6 +16,17 @@
 	<?php
 	$page = "";
 	session_start();
+################## redirect new
+$sql_ip_blocked_select = " SELECT MAX(time) FROM `logs` WHERE ipAdderss = '$_SESSION[ip]' and describeLog = 'blocked' AND userAgent = '$_SESSION[USER_AGENT]' ";
+$query_time = mysqli_query($con, $sql_ip_blocked_select);
+$time_bocked =  mysqli_fetch_array($query_time);
+$time_blocked_check = strtotime($time_bocked[0]);
+if ($query_time->num_rows > 0) {
+	if (time()- $time_blocked_check < 60 ) {
+		header("location: cantReach.php");
+	}	
+}
+############################
 
 	if (!isset($_SESSION['max_session_live'])) {
 		$_SESSION['max_session_live'] = time();
@@ -29,7 +40,7 @@
 		echo $timeLeft;
 		echo " Seconds";
 
-		if ($_SESSION['user'] == 'ADMIN' && $_SESSION['password'] == 'SAD_2019!') {
+		if (strtoupper($_SESSION['user']) == 'ADMIN' && $_SESSION['password'] == 'SAD_2019!') {
 			include 'functions/menuAdmin.php';
 		} else {
 			include 'functions/menu.php';
