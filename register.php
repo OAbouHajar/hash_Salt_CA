@@ -11,9 +11,9 @@ $query_time = mysqli_query($con, $sql_ip_blocked_select);
 $time_bocked =  mysqli_fetch_array($query_time);
 $time_blocked_check = strtotime($time_bocked[0]);
 if ($query_time->num_rows > 0) {
-	if (time()- $time_blocked_check < 60 ) {
-		header("location: cantReach.php");
-	}	
+  if (time() - $time_blocked_check < 60) {
+    header("location: cantReach.php");
+  }
 }
 ############################
 
@@ -47,7 +47,7 @@ if (isset($_POST["username"]) && isset($_POST["psw"])) {
 				VALUES                    ('$_SESSION[userName]', '$_SESSION[ip]', '$_SESSION[token]', '$_SESSION[attempts]', '0','blocked', '$timestamp', '$_SESSION[USER_AGENT]')";
 
         if (!mysqli_query($con, $sql_ip_blocked_insert)) {
-            echo "Error in selecting username & password (loginScreen.html.php)" . mysqli_error($con);
+          echo "Error in selecting username & password (loginScreen.html.php)" . mysqli_error($con);
         }
         echo "YOU HAVE 5 ATTEPTS ALREADY ";
         $_SESSION['lockedOut'] = true;
@@ -95,13 +95,23 @@ function buildPage($att)
         <input type='text' placeholder='Enter User Name' name='username'  title='Three letter or more (No charecters)' required>
 
         <label for='psw'><b>Password</b></label>
-        <input type='password' placeholder='Password must contain 1 uppercase, lowercase and number, and 4 char long' pattern='(?=^.{3,}$)((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]{3,}).*$'  name='psw' required>
-
+        <input type='password' placeholder='Password (UpperCase, LowerCase, Number/SpecialChar and min 8 Chars)' pattern='(?=^.{8,}$)((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$'  name='psw' required>
+        <br>Password must contain at least one : 
+        <ul>
+        <li>uppercase</li>
+        <li>lowercase</li>
+        <li>number</li>
+        <li>charecter</li>
+        <li>and more than 4 char long</li>
+        </ul>  
+      
+       
         <label for='psw-repeat'><b>Repeat Password</b></label>
-        <input type='password' placeholder='Password must contain 1 uppercase, lowercase and number, and 4 char long' pattern='(?=^.{3,}$)((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]{3,}).*$' name='psw-repeat' required>
+        <input type='password' placeholder='Password (UpperCase, LowerCase, Number/SpecialChar and min 8 Chars)' pattern='(?=^.{8,}$)((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$' name='psw-repeat' required>
         <hr>
         <p>By creating an account you agree to our <a href='#'>Terms & Privacy</a>.</p>
 
+        
         <button type='submit' class='registerbtn'>Register</button>
       </div>
       

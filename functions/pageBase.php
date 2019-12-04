@@ -16,6 +16,8 @@
 	<?php
 	$page = "";
 	session_start();
+	include 'db.inc.php';
+
 ################## redirect new
 $sql_ip_blocked_select = " SELECT MAX(time) FROM `logs` WHERE ipAdderss = '$_SESSION[ip]' and describeLog = 'blocked' AND userAgent = '$_SESSION[USER_AGENT]' ";
 $query_time = mysqli_query($con, $sql_ip_blocked_select);

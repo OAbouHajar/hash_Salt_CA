@@ -61,20 +61,20 @@ $hashed_salted_pass = md5($password . $salt);
 
 
 if (isset($_POST["userName"]) && isset($_POST["password"])) /* If the username and password are set (if you are logged in) */ {
+	
 	$username = new Sanatize($_POST["userName"]);
 	$username = $username->sanatize();
-	$password = new Sanatize($_POST["password"]);
-	$password = $password->sanatize();
+	// $password = new Sanatize($_POST["password"]);
+	// $password = $password->sanatize();
 	$_SESSION['password'] = $_POST["password"];
 	$attempts = $_SESSION['attempts'];
 	$_SESSION["username"] = $_POST["userName"];
+	$_SESSION["sana_username"] = $username;
 	#to hash and de hash
 	// $salt = "SELECT salt FROM `users` where userName= '$username' ";
 	// $querySalt = mysqli_query($con, $salt);
 	// $x =  mysqli_fetch_array($querySalt);
 	// $hashed_salted_pass = md5($_POST['password'] . $x[0]);
-
-
 
 	############ for the cookies and the session work #####
 	$_SESSION['userName'] = $_POST["userName"];
@@ -86,8 +86,6 @@ if (isset($_POST["userName"]) && isset($_POST["password"])) /* If the username a
 
 	// Select all users who match this username ans password comvination
 	$sql = "SELECT * FROM users WHERE userName = '$username' AND password = '$hashed_salted_pass'";
-	echo "<br>";
-
 	/* Error checking for the sql statement */
 	if (!mysqli_query($con, $sql)){
 		echo "Error in selecting username & password";
@@ -166,7 +164,7 @@ function buildPage($att)
 	<h2>Login Form</h2>
 	<div id = 'errorMessage' style='color:#f44336' ></div>
 
-	<form action='/project/loginScreen.html.php' method='post'>
+	<form action='/project/loginScreen.html.php' method='POST'>
 	  <div class='imgcontainer'>
 		<img src='img/img_avatar2.png' alt='Avatar' class='avatar'>
 	  </div>

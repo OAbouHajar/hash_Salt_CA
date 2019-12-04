@@ -39,7 +39,7 @@
 
 if (isset($_SESSION['user'])) {
 	//$userName = $_SESSION['user'];
-	echo "<div class='userMenuHead' >YOU ARE LOGED IN AS :   " . $_SESSION['user'] . "</div>";
+	echo "<div class='userMenuHead' >YOU ARE LOGED IN AS :   " . $_SESSION['sana_username'] . "</div>";
 }
 
 ?>

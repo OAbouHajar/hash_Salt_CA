@@ -97,7 +97,15 @@ function buildPage($o, $n, $c)
 			
 			<label for='newPass'>new pass</label> 
 			<input type = 'password' name = 'newPass' id = 'newPass' placeholder='Password must contain 1 uppercase, lowercase and number, and 4 char long' pattern='(?=^.{3,}$)((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]{3,}).*$' autocomplete = 'off' value=$n><br><br>
-		
+			<br>Password must contain at least one : 
+			<ul>
+			<li>uppercase</li>
+			<li>lowercase</li>
+			<li>number</li>
+			<li>charecter</li>
+			<li>and more than 4 char long</li>
+			</ul>  
+	
 		<label for='confirmPass'>confiem pass</label> 
 			<input type = 'password' name = 'confirmPass' id = 'confirmPass' autocomplete = 'off' value=$c><br><br>
 			<button class='button button5' name='submit' value='Submit'><span>submit </span></button>
