@@ -12,15 +12,18 @@ if ($query_time->num_rows > 0) {
 	}	
 }
 ############################
-$sqlCreate  = "CREATE DATABASE IF NOT EXISTS projecttest";
-$sql_user_table = "CREATE TABLE IF NOT EXISTS projecttest.users ( 
-    id int, userName varchar(255), 
+
+
+// $sqlCreate  = "CREATE DATABASE IF NOT EXISTS projecttest3";
+$sql_user_table = "CREATE TABLE  projecttest3.users ( 
+    id INT(11) NOT NULL AUTO_INCREMENT, 
+    userName varchar(255), 
     password varchar(255), 
     salt varchar(255), 
     PRIMARY KEY (id,userName) 
 )";
-$sql_logs_table = "CREATE TABLE IF NOT EXISTS projecttest.logs ( 
-    id int, 
+$sql_logs_table = "CREATE TABLE projecttest3.logs ( 
+    id INT(11) NOT NULL AUTO_INCREMENT, 
     userName varchar(255), 
     ipAdderss varchar(500), 
     sessionToken varchar(500), 
@@ -32,24 +35,24 @@ $sql_logs_table = "CREATE TABLE IF NOT EXISTS projecttest.logs (
     PRIMARY KEY (id) 
 )";
 
+$password_admin = 'SAD_2019!'; 
 $salt = uniqid(mt_rand());
-$new_salted_hashed = hashAndSalt('SAD_2019!', $salt);
-$sql_create_Admin = " INSERT INTO IF NOT EXISTS projecttest.users (`id`, `userName`, `password`, `salt`) 
-                    VALUES ('101', 'ADMIN', '$new_salted_hashed', '$salt')";
+$hashed_salted_pass = md5($password_admin .  $salt);
+$sql = "INSERT INTO `users` ( `id`, `userName`, `password`, `salt`) VALUES ('101','admin', '$hashed_salted_pass', '$salt')";
 
+// $sql_create_Admin = " INSERT INTO projecttest3.users (`id`, `userName`, `password`, `salt`) 
+//                     VALUES                          ('101', 'ADMIN', '$new_salted_hashed', '$salt')";
 
-if (!mysqli_query($con, $sqlCreate)) {
-    echo "Error Creatign Database" . mysqli_error($con);
-}
-
+    
 if (!mysqli_query($con, $sql_user_table)) {
     echo "Error Creatign Database" . mysqli_error($con);
 }
 if (!mysqli_query($con, $sql_logs_table)) {
     echo "Error Creatign Database" . mysqli_error($con);
 }
-if (!mysqli_query($con, $sql_create_Admin)) {
+if (!mysqli_query($con, $sql)) {
     echo "Error Creatign Database" . mysqli_error($con);
 }
+
 
 header("Location: loginScreen.html.php");

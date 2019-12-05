@@ -29,9 +29,9 @@
 <?php
 include 'db.inc.php';
 include "functions/pageBase.php";
-
-if (strtoupper($_SESSION['user']) == 'ADMIN' && $_SESSION['password'] == 'SAD_2019!') {
-    echo "
+if ((time() - $_SESSION['max_session_live']) < 6000) {
+    if (strtoupper($_SESSION['user']) == 'ADMIN' && $_SESSION['password'] == 'SAD_2019!') {
+        echo "
 <body>
 <div class='container'>
 <h1>This is the logs page</h1>
@@ -45,35 +45,37 @@ if (strtoupper($_SESSION['user']) == 'ADMIN' && $_SESSION['password'] == 'SAD_20
     </tr>
 ";
 
-    ##display table of logs
+        ##display table of logs
 
-    $sql = "SELECT * FROM logs";
-    $result = $con->query($sql);
+        $sql = "SELECT * FROM logs";
+        $result = $con->query($sql);
 
-    if ($result->num_rows > 0) {
-        // output data of each row
-        while ($row = $result->fetch_assoc()) {
-            echo "<tr>";
-            echo "<td>"  . $row["id"] . "</td>";
-            echo "<td>"  . $row["userName"] . "</td>";
-            echo "<td>" . $row["ipAdderss"] . "</td>";
-            echo "<td>" . $row["describeLog"] . "</td>";
-            echo "</tr>";
+        if ($result->num_rows > 0) {
+            // output data of each row
+            while ($row = $result->fetch_assoc()) {
+                echo "<tr>";
+                echo "<td>"  . $row["id"] . "</td>";
+                echo "<td>"  . $row["userName"] . "</td>";
+                echo "<td>" . $row["ipAdderss"] . "</td>";
+                echo "<td>" . $row["describeLog"] . "</td>";
+                echo "</tr>";
+            }
+            echo " </table>";
+        } else {
+            echo "NO DATA TO SHOW";
         }
-        echo " </table>";
+        $con->close();
     } else {
-        echo "NO DATA TO SHOW";
-    }
-    $con->close();
-} else {
-    echo "
+        echo "
 <body>
 <div class='container'>
 <h1>This is the logs page Avilable only for admin users Sorry</h1>
 </div>
 ";
+    }
+} else {
+    header('Location:logout.php');
 }
-
 
 ?>
 

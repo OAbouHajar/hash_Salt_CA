@@ -22,6 +22,8 @@ if (isset($_POST["username"]) && isset($_POST["psw"])) {
   $username = new Sanatize($_POST["username"]);
   $username = $username->sanatize();
   $attempts = $_SESSION['attempts'];
+  $password = $_POST["psw"];
+
   $sql_check_user_name = "SELECT * FROM `users` where userName = '$username'";
 
   /* Error checking for the sql statement */
@@ -33,9 +35,12 @@ if (isset($_POST["username"]) && isset($_POST["psw"])) {
       $hashed_salted_pass = hashAndSalt($password, $salt);
       $sql = "INSERT INTO `users` ( `userName`, `password`, `salt`) VALUES ('$username', '$hashed_salted_pass', '$salt')";
       if (!mysqli_query($con, $sql)) {
-        echo "Error in selecting username & password" . mysqli_error($con);
+        echo "Error in INSERT username & password" . mysqli_error($con);
       }
-      header("location: loginScreen.html.php");
+      echo "<script>
+      alert('YOUR REGISTRATION HAS BEEN SUCSSEFUL !!');
+      window.location.href='loginScreen.html.php';
+      </script>";      
     } else {
       $attempts++;
       if ($attempts <= 5) /* If the attempts are less than or equal to 5 */ {
@@ -83,7 +88,7 @@ function buildPage($att)
     </head>
     <body>
 
-    <form action='/project/register.php', method='POST'>
+    <form action='/C00220135/register.php', method='POST'>
       <div class='container'>
         <h1>Register</h1>
         <div id = 'errorMessage' style='color:#f44336' ></div>
@@ -92,10 +97,10 @@ function buildPage($att)
         <hr>
         <h1>YOU HAVE 5 ATTEMPT :: this is Attempt : $att Of 5 </h1>
         <label for='username'><b>User Name</b></label>
-        <input type='text' placeholder='Enter User Name' name='username'  title='Three letter or more (No charecters)' required>
+        <input type='text' placeholder='Enter User Name' name='username'  title='Three letter or more' pattern='.{3,}'  required>
 
         <label for='psw'><b>Password</b></label>
-        <input type='password' placeholder='Password (UpperCase, LowerCase, Number/SpecialChar and min 8 Chars)' pattern='(?=^.{8,}$)((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$'  name='psw' required>
+        <input type='password' placeholder='Enter User Password' title='Password (UpperCase, LowerCase, Number/SpecialChar and min 8 Chars)' pattern='(?=^.{8,}$)((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$'  name='psw' required>
         <br>Password must contain at least one : 
         <ul>
         <li>uppercase</li>
@@ -107,7 +112,7 @@ function buildPage($att)
       
        
         <label for='psw-repeat'><b>Repeat Password</b></label>
-        <input type='password' placeholder='Password (UpperCase, LowerCase, Number/SpecialChar and min 8 Chars)' pattern='(?=^.{8,}$)((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$' name='psw-repeat' required>
+        <input type='password' placeholder='Enter User Password' title='Password (UpperCase, LowerCase, Number/SpecialChar and min 8 Chars)' pattern='(?=^.{8,}$)((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$' name='psw-repeat' required>
         <hr>
         <p>By creating an account you agree to our <a href='#'>Terms & Privacy</a>.</p>
 

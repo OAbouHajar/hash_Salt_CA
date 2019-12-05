@@ -6,11 +6,17 @@ echo "Time Left for this session :::";
 echo 6000 - (time() - $_SESSION['max_session_live']);
 echo " Seconds";
 
-if ($_SESSION['lockedOut']) {
-	echo "time out ";
-	echo $_SESSION['lockedOutTime'];
-	header("location: cantReach.php");
+################## redirect new
+$sql_ip_blocked_select = " SELECT MAX(time) FROM `logs` WHERE ipAdderss = '$_SESSION[ip]' and describeLog = 'blocked' AND userAgent = '$_SESSION[USER_AGENT]' ";
+$query_time = mysqli_query($con, $sql_ip_blocked_select);
+$time_bocked =  mysqli_fetch_array($query_time);
+$time_blocked_check = strtotime($time_bocked[0]);
+if ($query_time->num_rows > 0) {
+	if (time()- $time_blocked_check < 60 ) {
+		header("location: cantReach.php");
+	}	
 }
+############################
 
 
 if ($_SESSION['user'] == 'ADMIN' && $_SESSION['password'] == 'SAD_2019!') {
@@ -23,14 +29,14 @@ include "functions/hashAndSalt.php";
 
 if ((time() - $_SESSION['max_session_live']) < 6000) {
 	if (isset($_SESSION["username"])) {
-		if (isset($_POST['oldPass']) && isset($_POST['newPass']) && isset($_POST['confirmPass'])) {
-			$old = $_POST['oldPass'];
-			$new = $_POST['newPass'];
-			$confirm = $_POST['confirmPass'];
+		if (isset($_GET['oldPass']) && isset($_GET['newPass']) && isset($_GET['confirmPass'])) {
+			$old = $_GET['oldPass'];
+			$new = $_GET['newPass'];
+			$confirm = $_GET['confirmPass'];
 
 
 			#to getr the old hashed password 
-			$user = $_SESSION['user'];
+			$user = $_SESSION['username'];
 			$oldHashed = salted_hashed_DB($user, $old);
 
 
@@ -46,7 +52,7 @@ if ((time() - $_SESSION['max_session_live']) < 6000) {
 					if ($old == $new) {
 						buildPage($old, $new, $confirm);
 						echo "<script type='text/javascript'>alert('NEW PASSWORD SHOULD BE DIFFERENT TO THE OLD ONE');</script>";
-					} else if ($_POST['newPass'] != $_POST['confirmPass']) {
+					} else if ($_GET['newPass'] != $_GET['confirmPass']) {
 						buildPage($old, $new, $confirm);
 						#echo "<div class='errorstyle'> new pass not matched please try again</div>";
 						echo "<script type='text/javascript'>alert('new pass not matched please try again');</script>";
@@ -89,23 +95,24 @@ function buildPage($o, $n, $c)
 	echo "<body>
 	<div class='container'>
 
-	<form action = 'changePass.php' method = 'post'>
+	<form action = 'changePass.php' method = 'GET'>
 		<h1> my system</h1>
 		<h3>change password </h3>
 			<label for='oldPass'>Old pass</label> 
-			<input type = 'password' name = 'oldPass' id = 'oldPass' placeholder='Password must contain 1 uppercase, lowercase and number, and 4 char long' pattern='(?=^.{3,}$)((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]{3,}).*$' autocomplete = 'off' value=$o><br><br>
+			<input type = 'password' name = 'oldPass' id = 'oldPass' placeholder='Enter User Password' title='Password (UpperCase, LowerCase, Number/SpecialChar and min 8 Chars)' pattern='(?=^.{8,}$)((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$' autocomplete = 'off' value=$o><br><br>
 			
 			<label for='newPass'>new pass</label> 
-			<input type = 'password' name = 'newPass' id = 'newPass' placeholder='Password must contain 1 uppercase, lowercase and number, and 4 char long' pattern='(?=^.{3,}$)((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]{3,}).*$' autocomplete = 'off' value=$n><br><br>
+			<input type = 'password' name = 'newPass' id = 'newPass' placeholder='Enter User Password' title='Password (UpperCase, LowerCase, Number/SpecialChar and min 8 Chars)' pattern='(?=^.{8,}$)((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$' autocomplete = 'off' value=$n><br><br>
 			<br>Password must contain at least one : 
+	   <div>
 			<ul>
-			<li>uppercase</li>
-			<li>lowercase</li>
-			<li>number</li>
-			<li>charecter</li>
-			<li>and more than 4 char long</li>
-			</ul>  
-	
+        <li>uppercase</li>
+        <li>lowercase</li>
+        <li>number</li>
+        <li>charecter</li>
+        <li>and more than 4 char long</li>
+        </ul>   
+	</div>
 		<label for='confirmPass'>confiem pass</label> 
 			<input type = 'password' name = 'confirmPass' id = 'confirmPass' autocomplete = 'off' value=$c><br><br>
 			<button class='button button5' name='submit' value='Submit'><span>submit </span></button>

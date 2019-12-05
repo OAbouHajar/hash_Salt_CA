@@ -55,7 +55,7 @@ if ($query_time->num_rows > 0) {
 
 ##### NOT SUER WHY HERE ########
 $salt = uniqid(mt_rand());
-$hashed_salted_pass = md5($password . $salt);
+//$hashed_salted_pass = md5($password . $salt);
 #### END NOT SURE ###
 
 
@@ -66,6 +66,8 @@ if (isset($_POST["userName"]) && isset($_POST["password"])) /* If the username a
 	$username = $username->sanatize();
 	// $password = new Sanatize($_POST["password"]);
 	// $password = $password->sanatize();
+	$password = $_POST["password"];
+
 	$_SESSION['password'] = $_POST["password"];
 	$attempts = $_SESSION['attempts'];
 	$_SESSION["username"] = $_POST["userName"];
@@ -164,7 +166,7 @@ function buildPage($att)
 	<h2>Login Form</h2>
 	<div id = 'errorMessage' style='color:#f44336' ></div>
 
-	<form action='/project/loginScreen.html.php' method='POST'>
+	<form action='/C00220135/loginScreen.html.php' method='POST'>
 	  <div class='imgcontainer'>
 		<img src='img/img_avatar2.png' alt='Avatar' class='avatar'>
 	  </div>

@@ -31,10 +31,10 @@ $sec = "1";
         // echo (time() - $time_blocked_check);
 
 
-        echo "<h1>YOU ARE LOCKED OUT YOU HAVE TO WAIT 60 SEC</h1>";
-        echo "<br><h1> >>>  YOUR WAITING TIME IS ::::  " . (time()- $time_blocked_check) . "</h1>";
+        echo "<h1>YOU ARE LOCKED OUT YOU HAVE TO WAIT 180 SEC</h1>";
+        echo "<br><h1> >>>  YOUR WAITING TIME IS ::::  " . (time()- $time_blocked_check) . " second </h1>";
 
-        if (time()- $time_blocked_check > 60 ) {
+        if (time()- $time_blocked_check > 180 ) {
            
             header("location: loginScreen.html.php");
         }
